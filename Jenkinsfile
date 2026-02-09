@@ -2,45 +2,43 @@ pipeline {
     agent any
 
     environment {
-        APP_NAME = 'SpringDataRest'
-        DEPLOY_DIR = '/opt/tomcat/webapps/' // Change path if needed
-    }
-
-    options {
-        skipDefaultCheckout(true)
-        timestamps()
-        buildDiscarder(logRotator(numToKeepStr: '10'))
+        // اسم الـ credential اللي درتيه في Jenkins
+        GIT_CREDENTIALS_ID = 'github-pat'
+        REPO_URL = 'https://github.com/BOUSSELHAMYIYKI/my-projectSPRINT.git'
+        BRANCH_NAME = 'main'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                echo "Cloning repository..."
-                checkout([$class: 'GitSCM', 
-                    branches: [[name: 'main']], 
-                    userRemoteConfigs: [[url: 'https://github.com/BOUSSELHAMYIYKI/project-SpringDataRest.git']]
-                ])
+                // Clone repo باستخدام credential
+                git(
+                    url: env.REPO_URL,
+                    branch: env.BRANCH_NAME,
+                    credentialsId: env.GIT_CREDENTIALS_ID
+                )
             }
         }
 
         stage('Build') {
             steps {
-                echo "Building project with Maven..."
-                sh 'mvn clean package -DskipTests'
+                echo "Build stage running..."
+                // هنا تحط أي build command، مثلا Maven أو Gradle
+                sh 'echo "Build command placeholder"'
             }
         }
 
         stage('Test') {
             steps {
-                echo "Running tests..."
-                sh 'mvn test'
+                echo "Test stage running..."
+                sh 'echo "Test command placeholder"'
             }
         }
 
         stage('Deploy') {
             steps {
-                echo "Deploying WAR to Tomcat..."
-                sh "cp target/*.war ${DEPLOY_DIR}"
+                echo "Deploy stage running..."
+                sh 'echo "Deploy command placeholder"'
             }
         }
     }
@@ -50,11 +48,7 @@ pipeline {
             echo 'Pipeline completed successfully!'
         }
         failure {
-            echo 'Pipeline failed!'
-        }
-        always {
-            echo 'Cleaning workspace...'
-            cleanWs()
+            echo 'Pipeline failed. Check logs for details.'
         }
     }
 }
